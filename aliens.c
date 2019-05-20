@@ -46,8 +46,8 @@
 #define BUF_SIZE 32
 #define MINCOL 1
 /*
-/* global variables
-*/
+ * global variables
+ */
 int scores,bases,game;
 int i,j,danger,max_danger;
 int flip,flop,going_left,al_num,b;
@@ -288,10 +288,10 @@ static void init(void)
 {
 	unsigned int seed;
 
-	/* nice(10);       /* decrease priority */
+//	nice(10);		/* decrease priority */
 	seed = time(NULL);
 	seed = rol32(seed, seed);
-	srand(seed);  /* start rand randomly */
+	srand(seed);		/* start rand randomly */
 	/*
 	 * verify CRT and get proper cursor control sequence.
 	 */
