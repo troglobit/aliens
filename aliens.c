@@ -33,7 +33,7 @@
 #endif
 #define YES	1
 #define NO	0
-#define SCOREFILE  "/usr/games/lib/aliens.score"
+#define SCOREFILE  "/var/games/aliens.score"
 #define DELETE '\177'
 #define ABORT '\34'
 #define QUIT 'q'
