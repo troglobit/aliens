@@ -113,18 +113,18 @@ struct {
 shp;
 int scorsave[8];
 
+static void leave(void);
+static void pollch(void);
+static void draw(void);
 
-/*
- * outchar is like putchar but can be passed to tputs.
- */
-outchar(ch)
-char ch;
-{
-	putchar(ch);
-};
+static void onebomb(int);
+static void alien(void);
+static void onealien(int);
+static void vsinit(void);
+
 
 /* ds_obj -- display an object */
-ds_obj(class)
+static void ds_obj(class)
 int class;
 {
 	if ((game==INVIS)&&(class>=0)&&(class<=5))   class = 6;
@@ -180,7 +180,7 @@ int class;
 /*
  * instructions -- print out instructions
  */
-instruct()
+static void instruct(void)
 {
 	clear();
 	move(0,0);
@@ -203,7 +203,7 @@ instruct()
 /*
  * over -- game over processing
  */
-over()
+static void over(void)
 {
 	struct passwd *getpwuid(), *p;
 	static char *names[4] = {
@@ -259,7 +259,8 @@ over()
 /*
  * leave -- clear bottom line, flush buffers, reset tty, and exit.
  */
-leave() {
+static void leave(void)
+{
 	move(23,0);
 	clrtoeol();
 	refresh();
@@ -272,7 +273,7 @@ leave() {
  * init -- does global initialization and spawns a child process to read
  *      the input terminal.
  */
-init()
+static void init(void)
 {
 	/* nice(10);       /* decrease priority */
 	time(&timein);  /* get start time */
@@ -295,7 +296,7 @@ init()
 	game = 0;
 	instruct();
 	while (game==0) {
-		poll();
+		pollch();
 		sleep(1);
 	}
 	scores = 0;
@@ -306,7 +307,7 @@ init()
 };
 
 /* tabl -- tableau draws the starting game tableau.  */
-tabl()
+static void tabl(void)
 {
 	clear();
 
@@ -359,7 +360,7 @@ tabl()
 }
 
 /* draw -- redraw screen from data structure */
-draw()
+static void draw(void)
 {
 	int a, i, j;
 
@@ -434,8 +435,8 @@ draw()
 	fflush(stdout);
 }
 
-/* poll -- read characters sent by input subprocess and set global flags */
-poll()
+/* pollch -- read characters sent by input subprocess and set global flags */
+static void pollch(void)
 {
 	int keyhit;
 	struct stat stbuf;
@@ -513,7 +514,7 @@ poll()
 }
 
 /* base -- move the laser base left or right */
-base()
+static void base(void)
 {
 	bas.col += bas.vel;
 	if (bas.col<1)
@@ -523,7 +524,7 @@ base()
 };
 
 /* beam -- activate or advance the laser beam if required */
-beam()
+static void beam(void)
 {
 	if (bem.row == 0)
 		return;
@@ -591,16 +592,18 @@ beam()
 };
 
 /* bomb -- advance the next active bomb */
-bomb()
+static void bomb(void)
 {
-	if (bmb_cnt<=0)   return;
+	if (bmb_cnt<=0)
+		return;
 	for (b=0; b<BOMB_CNT; b++) {
 		if (bmb[b].row != 0)
 			onebomb(b);
 	}
 }
 
-onebomb(b)
+static void onebomb(b)
+int b;
 {
 	/*
 	 * now advance the bomb, check for hit, and display
@@ -646,7 +649,7 @@ onebomb(b)
 }
 
 /* ship -- create or advance a mystery ship if desired */
-ship()
+static void ship(void)
 {
 	if (shp.vel==0) {
 		if ((i=rand())<32) {
@@ -686,7 +689,7 @@ ship()
  * again for a while.
  */
 #define TICKTIME (1000/60)
-tick()
+static void tick(void)
 {
 	static int clock;
 	int rv;
@@ -701,14 +704,14 @@ tick()
 }
 
 /* Main loop of game */
-update()
+static void update(void)
 {
 	int i;
 
 	for (i=0; i<nturns[nhit]; i++) {
 		tick();
 //		draino(100);
-		poll();
+		pollch();
 		beam();
 		beam();
 		base();
@@ -724,7 +727,7 @@ update()
 }
 
 /* Advance all the aliens */
-alien()
+static void alien(void)
 {
 	if (al_cnt==0)   return; /* check if done */
 	flop = 0;
@@ -742,7 +745,8 @@ alien()
 }
 
 /* onealien -- advance the next alien */
-onealien(an)
+static void onealien(an)
+int an;
 {
 	int x, y;
 
@@ -790,7 +794,8 @@ onealien(an)
 }
 
 /* main -- scheduler and main entry point for aliens */
-main(argc, argv)
+int main(argc, argv)
+int argc;
 char **argv;
 {
 	int cnt = 0;
@@ -806,13 +811,16 @@ char **argv;
 		while (1)
 		{
 			update();
-			if (al_cnt==0)   break;
+			if (al_cnt==0)
+				break;
 		};
 	};
+
+	return 0;
 }
 
 /* terminal type using curses */
-vsinit()
+static void vsinit(void)
 {
 	initscr();
 	if (start_color() == OK)
