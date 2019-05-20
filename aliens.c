@@ -452,7 +452,6 @@ static void draw(void)
 static void pollch(void)
 {
 	int keyhit;
-	struct stat stbuf;
 
 	if (game==BLOODBATH) {
 		if (bas.col<=1)   bas.vel = 1;
@@ -811,8 +810,6 @@ int main(argc, argv)
 int argc;
 char **argv;
 {
-	int cnt = 0;
-
 	if (argc > 1)
 		interv = atoi(argv[1]);
 	init();
