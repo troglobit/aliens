@@ -707,7 +707,7 @@ update()
 
 	for (i=0; i<nturns[nhit]; i++) {
 		tick();
-		draino(100);
+//		draino(100);
 		poll();
 		beam();
 		beam();
