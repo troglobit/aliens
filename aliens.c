@@ -704,7 +704,7 @@ static void ship(void)
 static void tick(void)
 {
 	static int clock;
-	int rv;
+	int rv = 0;
 
 	if (clock <= 0)
 		rv = napms(TICKTIME);
