@@ -14,6 +14,7 @@
  * Modified to use colors: May 1987, by Sam Shteingart, BTL
  */
 
+#include <err.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -227,12 +228,19 @@ static void over(void)
 	/* high score to date processing */
 	p = getpwuid(getuid());
 	if ((scorefile=open(SCOREFILE,2)) != -1) {
-		read(scorefile,scorsave,sizeof(scorsave));
+		int rc;
+
+		rc = read(scorefile,scorsave,sizeof(scorsave));
+		if (rc == -1)
+			warn("Failed reading score file %s", SCOREFILE);
+
 		if (scorsave[(game-BLOODBATH)*2]<scores) {
 			scorsave[(game-BLOODBATH)*2] =scores;
 			scorsave[(game-BLOODBATH)*2+1] = getuid();
 			lseek(scorefile,0l,0);
-			write(scorefile,scorsave,sizeof(scorsave));
+			rc = write(scorefile,scorsave,sizeof(scorsave));
+			if (rc == -1)
+				warn("Failed writing score file %s", SCOREFILE);
 			close(scorefile);
 		}
 		else {
