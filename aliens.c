@@ -60,8 +60,6 @@ char lastch;
 char outbuf[BUF_SIZE + 1];
 char combuf[2];
 char inbuf[2];
-long timein;
-int timehi,timelo;      /* do not break up this declaration */
 int fd1 = 1;
 int nleft = BUF_SIZE;
 int ppid,cpid;
@@ -285,12 +283,15 @@ static void leave(void)
  * init -- does global initialization and spawns a child process to read
  *      the input terminal.
  */
+#define rol32(data,shift) ((data) >> (shift)) | ((data) << (32 - (shift)))
 static void init(void)
 {
+	unsigned int seed;
+
 	/* nice(10);       /* decrease priority */
-	time(&timein);  /* get start time */
-	time(&timehi);  /* get it again for seeding rand */
-	srand(timelo);  /* start rand randomly */
+	seed = time(NULL);
+	seed = rol32(seed, seed);
+	srand(seed);  /* start rand randomly */
 	/*
 	 * verify CRT and get proper cursor control sequence.
 	 */
